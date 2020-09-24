@@ -1,52 +1,46 @@
-package main
+package test
 
 import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/ka2jun8/go-echo-sample/server"
 )
 
-type Input struct {
+// Input is type of test input information
+type CounterTestInput struct {
 	method string
 	path   string
 }
 
-type Expect struct {
+// Expect is type of test expectation
+type CounterTestExpect struct {
 	status  int
 	message string
 }
 
-func TestHealthzHandler(t *testing.T) {
+func TestCounterHandler(t *testing.T) {
 	var tests = []struct {
-		input  Input
-		expect Expect
+		input  CounterTestInput
+		expect CounterTestExpect
 	}{
 		{
-			Input{
-				method: "GET",
-				path:   "/healthz",
-			},
-			Expect{
-				status:  http.StatusOK,
-				message: "ok",
-			},
-		},
-		{
-			Input{
+			CounterTestInput{
 				method: "POST",
 				path:   "/count",
 			},
-			Expect{
+			CounterTestExpect{
 				status:  http.StatusOK,
 				message: "",
 			},
 		},
 		{
-			Input{
+			CounterTestInput{
 				method: "GET",
 				path:   "/count",
 			},
-			Expect{
+			CounterTestExpect{
 				status:  http.StatusOK,
 				message: "1",
 			},
@@ -57,7 +51,7 @@ func TestHealthzHandler(t *testing.T) {
 		req := httptest.NewRequest(test.input.method, test.input.path, nil)
 		rec := httptest.NewRecorder()
 
-		router := Router()
+		router := server.Router()
 		router.ServeHTTP(rec, req)
 
 		status := test.expect.status
